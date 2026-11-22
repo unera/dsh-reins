@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3] - 2026-11-22
+### Added
+- **`npm i -g github:unera/dsh-reins` gives a working `reins` command.** The package now carries
+  a `bin` shim that finds the Electron binary and hands it the application; Electron itself is an
+  optional dependency, because a git install brings no `devDependencies` and the installer needs
+  the binary. `optional` rather than `dependencies` on purpose: electron-builder refuses a package
+  that keeps Electron among its ordinary dependencies, and a skipped build must not fail the
+  install.
+
 ## [0.1.2] - 2026-11-22
 ### Fixed
 - **The build configuration was never read.** `electron-builder.config.mjs` is not one of the

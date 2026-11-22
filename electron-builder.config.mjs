@@ -14,15 +14,18 @@ export default {
   files: ['src/**/*', 'package.json'],
   linux: {
     target: ['AppImage'],
+    publish: ['github'],
     category: 'Development',
     artifactName: 'reins-${version}-${arch}.${ext}'
   },
   win: {
     target: ['nsis'],
+    publish: ['github'],
     artifactName: 'reins-${version}-setup.${ext}'
   },
   mac: {
     target: ['dmg', 'zip'],
+    publish: ['github'],
     category: 'public.app-category.developer-tools',
     artifactName: 'reins-${version}-${arch}.${ext}'
   },

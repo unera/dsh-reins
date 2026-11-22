@@ -7,6 +7,9 @@ on:
 
 jobs:
   build:
+    # publishing a release writes to the repository: the default token is read-only here
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:

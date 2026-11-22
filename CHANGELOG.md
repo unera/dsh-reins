@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1] - 2026-11-22
+### Fixed
+- **CI could not publish.** The release job answered `403 Resource not accessible by
+  integration`: a tag-triggered run gets a read-only token unless the workflow asks for
+  `contents: write`. The permission is now explicit, and each platform names its publisher
+  (`github`) instead of leaving electron-builder to guess.
+
 ## [0.1.0] - 2026-11-22
 ### Added
 - **A window to any Harness.** Remote by address and launch link (exchange for the browser cookie),

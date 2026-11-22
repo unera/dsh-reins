@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+  <title>Reins — настройки</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <h1>Reins</h1>
+    <p class="hint">Окно к DeepSeek Harness: локальному или удалённому.</p>
+
+    <h2>Харнесс</h2>
+    <label for="mode">Где живёт</label>
+    <select id="mode">
+      <option value="local">Здесь: запускать и останавливать (или оставлять)</option>
+      <option value="remote">На сервере: подключаться по адресу</option>
+    </select>
+
+    <div id="remote-box">
+      <label for="url">Адрес</label>
+      <input type="text" id="url" placeholder="https://dsh.uvw.ru" spellcheck="false">
+      <label for="token">Ссылка с токеном или сам токен</label>
+      <input type="text" id="token" placeholder="https://dsh.uvw.ru/?token=…" spellcheck="false">
+      <p class="hint">Токен живёт один запуск сервера: обмен на cookie происходит сейчас и больше не нужен. Дальше Reins держится на cookie.</p>
+    </div>
+
+    <div id="local-box">
+      <label for="profile">Профиль</label>
+      <input type="text" id="profile" placeholder="reins" spellcheck="false">
+      <p class="hint">Свой профиль — это чистый харнесс. Укажи <code>web</code>, чтобы поднять тот, что уже настроен у CLI.</p>
+      <div class="row">
+        <div>
+          <label for="port">Порт</label>
+          <input type="number" id="port" placeholder="0" min="0" max="65535">
+        </div>
+        <div>
+          <label for="onExit">При выходе</label>
+          <select id="onExit">
+            <option value="stop">остановить</option>
+            <option value="detach">отсоединиться, процесс оставить</option>
+          </select>
+        </div>
+      </div>
+      <label for="home">DSH_HOME (пусто — общий с CLI)</label>
+      <input type="text" id="home" placeholder="~/.dsh" spellcheck="false">
+    </div>
+
+    <h2>Вид</h2>
+    <label for="theme">Тема</label>
+    <select id="theme">
+      <option value="system">как в системе</option>
+      <option value="dark">тёмная</option>
+      <option value="light">светлая</option>
+    </select>
+    <label class="inline"><input type="checkbox" id="tabs">Показывать табы</label>
+
+    <h2>Сеть</h2>
+    <label for="proxyMode">Как ходить в сеть</label>
+    <select id="proxyMode">
+      <option value="system">как в системе</option>
+      <option value="direct">напрямую</option>
+      <option value="manual">через прокси</option>
+    </select>
+    <div id="proxy-box">
+      <label for="proxyRules">Правила прокси</label>
+      <input type="text" id="proxyRules" placeholder="http=127.0.0.1:3128;https=127.0.0.1:3128" spellcheck="false">
+      <label for="proxyBypass">Мимо прокси</label>
+      <input type="text" id="proxyBypass" placeholder="localhost,127.0.0.1,::1" spellcheck="false">
+    </div>
+
+    <div class="actions">
+      <button id="save">Сохранить</button>
+      <button id="connect" class="primary">Подключиться</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="log"></div>
+  </main>
+  <script src="settings.js"></script>
+</body>
+</html>

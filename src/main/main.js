@@ -8,7 +8,7 @@
  * credential, and an ordinary `/api` request tells us whether it is still good — that is the
  * check behind "записан ли урл и авторизован ли он".
  */
-import { app, BrowserWindow, ipcMain, nativeTheme, session, shell, WebContentsView } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, session, shell, WebContentsView } from 'electron'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -275,13 +275,16 @@ function routeNewWindow (contents, details) {
 function layoutTabs () {
   if (!shellWindow || shellWindow.isDestroyed()) return
   const { width, height } = shellWindow.getContentBounds()
+  // with tabs turned off there is no strip at all: the page gets the whole window, not a window
+  // with an empty band at the top
+  const strip = load().tabs === false ? 0 : STRIP_HEIGHT
   for (const tab of tabs) {
     const visible = tab === activeTab
     tab.view.setBounds({
       x: 0,
-      y: visible ? STRIP_HEIGHT : 0,
+      y: visible ? strip : 0,
       width: visible ? Math.max(0, width) : 0,
-      height: visible ? Math.max(0, height - STRIP_HEIGHT) : 0
+      height: visible ? Math.max(0, height - strip) : 0
     })
   }
 }
@@ -339,6 +342,28 @@ function config () {
   return load()
 }
 
+/**
+ * The keys that replace the missing menu, bound to every page we own.
+ *
+ * F12 belongs to settings, not to DevTools: with the strip hidden there is no other way back into
+ * the settings screen, and a key that opens a developer panel a person does not want would be the
+ * only way in. DevTools stay available on Ctrl+Shift+I for whoever needs them.
+ */
+function bindKeys (contents) {
+  contents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return
+    if (input.key === 'F12') {
+      event.preventDefault()
+      showSettings()
+      return
+    }
+    if (input.control && input.shift && String(input.key).toLowerCase() === 'i') {
+      event.preventDefault()
+      contents.toggleDevTools()
+    }
+  })
+}
+
 function wireIpc () {
   ipcMain.handle('reins:state', async () => {
     const config = load()
@@ -357,6 +382,12 @@ function wireIpc () {
     const config = save(patch ?? {})
     applyTheme(config)
     await applyProxy(config)
+    // the tabs switch is a layout change, not a restart: the strip appears or the page takes the
+    // whole window right now
+    if (shellWindow && !shellWindow.isDestroyed()) {
+      shellWindow.webContents.send('reins:base', { base: state.base, tabs: config.tabs })
+      layoutTabs()
+    }
     return config
   })
 
@@ -429,6 +460,7 @@ async function detach () {
 }
 
 app.on('web-contents-created', (_event, contents) => {
+  bindKeys(contents)
   contents.setWindowOpenHandler((details) => routeNewWindow(contents, details))
   contents.on('page-title-updated', (_event, title) => {
     const tab = tabs.find((item) => item.view.webContents === contents)
@@ -440,6 +472,10 @@ app.on('web-contents-created', (_event, contents) => {
 
 app.whenReady().then(async () => {
   app.setName('Reins')
+  // the default Electron menu lists items that do nothing in this application — an Edit menu
+  // over a page we do not own, a View menu nobody wired. A menu that is not working is worse than
+  // no menu, and the few commands a person needs are on keys: F12 for settings.
+  Menu.setApplicationMenu(null)
   const config = load()
   applyTheme(config)
   await applyProxy(config)

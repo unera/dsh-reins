@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.6] - 2026-11-22
+### Changed
+- **Tabs off means no strip at all.** The band stayed reserved with the tab strip hidden inside it:
+  a window spending 44 pixels on nothing, with the settings button gone with the strip. With tabs
+  off the page now takes the whole window, and the switch applies at once — no restart.
+- **Settings moved to F12.** With no strip there is no gear to press, and a key that is always
+  there beats a button that disappears. DevTools stay on Ctrl+Shift+I for whoever needs them.
+- **The application menu is gone.** The default Electron menu offered Edit and View commands that
+  this application never wired to anything — a non-working menu is worse than none.
+
 ## [0.1.5] - 2026-11-22
 ### Fixed
 - **A pasted launch link now fills the whole form.** `https://host/?token=…` is one string on the

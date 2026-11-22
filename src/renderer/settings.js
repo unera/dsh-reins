@@ -36,6 +36,7 @@ function syncBoxes () {
 
 /** What is typed here; the token is read once and cleared by the caller. */
 function collect () {
+  adoptLink()
   const tokenField = $('token').value.trim()
   return {
     config: {
@@ -60,14 +61,46 @@ function collect () {
 }
 
 /** A token is accepted as a whole link; only the `token` parameter is taken out of it. */
-function tokenOf (value) {
-  if (!value) return ''
+/**
+ * A pasted launch link, split into the two things it carries.
+ *
+ * `https://host/?token=…` is one string on the clipboard and two fields on this page, so it is
+ * parsed once here: the origin becomes the address, the `token` parameter becomes the token. What
+ * is not a link is taken as a bare token — a person may have copied just the value.
+ */
+function linkParts (value) {
+  const raw = String(value ?? '').trim()
+  if (!raw) return { origin: '', token: '' }
   try {
-    const url = new URL(value)
-    return url.searchParams.get('token') ?? value
+    const url = new URL(raw)
+    return { origin: url.origin, token: url.searchParams.get('token') ?? '' }
   } catch {
-    return value
+    return { origin: '', token: raw }
   }
+}
+
+/** The token alone, for the request. */
+function tokenOf (value) {
+  const parts = linkParts(value)
+  return parts.token
+}
+
+/**
+ * A link in the token field is the whole answer: it names the server too.
+ *
+ * The mode is switched and the address is filled, because asking for the same server twice — once
+ * as a link and once as an address — is exactly the confusion this field exists to avoid.
+ */
+function adoptLink () {
+  const parts = linkParts($('token').value)
+  if (!parts.origin) return
+  if ($('mode').value !== 'remote') {
+    $('mode').value = 'remote'
+    syncBoxes()
+  }
+  // the link wins over whatever stands in the address field: it is the freshest statement about
+  // which server this is, and a stale address silently sent the token to the wrong host
+  $('url').value = parts.origin
 }
 
 function status (text, kind = '') {
@@ -113,6 +146,14 @@ async function connect () {
   }
 }
 
+$('token').addEventListener('input', adoptLink)
+// an address has no meaning for a local Harness: typing one is a statement about the mode too
+$('url').addEventListener('input', () => {
+  if ($('url').value.trim() && $('mode').value === 'local') {
+    $('mode').value = 'remote'
+    syncBoxes()
+  }
+})
 $('mode').addEventListener('change', syncBoxes)
 $('proxyMode').addEventListener('change', syncBoxes)
 $('save').addEventListener('click', saveOnly)

@@ -114,7 +114,7 @@ async function openConnection () {
       return { ok: true, url: state.start, error: null }
     } catch (error) {
       note(`локальный харнесс не поднялся: ${error.message}`)
-      return { ok: false, url: '', error: error.message }
+      return { ok: false, url: '', error: explainLocalFailure(error.message, connection.profile) }
     }
   }
   if (!connection.url) return { ok: false, url: '', error: 'адрес сервера не задан' }
@@ -171,6 +171,24 @@ async function waitAuthorized (timeoutMs = 15_000) {
     if (Date.now() - started >= timeoutMs) return last
     await new Promise((resolve) => setTimeout(resolve, 400))
   }
+}
+
+/**
+ * A failed local start, said in words that lead somewhere.
+ *
+ * The CLI's own answer — `profile "reins" does not exist; create it with 'dsh plugin --profile
+ * reins add <package>'` — is true and useless: a person who wanted a window to a remote server is
+ * not going to run that. The message names both ways out instead.
+ */
+function explainLocalFailure (message, profile) {
+  const missing = /profile "([^"]+)" does not exist/.exec(message ?? '')
+  if (missing) {
+    const name = missing[1]
+    return `Профиль «${name}» ещё не создан в этом DSH. Либо укажите в настройках существующий профиль ` +
+      `(например web), либо создайте этот командой: dsh plugin --profile ${name} add @deepseek-ai/dsh-base @deepseek-ai/dsh-web-app. ` +
+      'Если харнесс на другом сервере — переключите «Где живёт» на «На сервере» и вставьте ссылку с токеном.'
+  }
+  return message ?? 'локальный харнесс не поднялся'
 }
 
 /** A small frameless page around our own markup. */

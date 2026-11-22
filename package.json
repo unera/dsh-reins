@@ -1,7 +1,7 @@
 {
   "name": "dsh-reins",
   "productName": "Reins",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A window to any DeepSeek Harness: local or remote, with tabs, theme and a proxy",
   "type": "module",
   "main": "src/main/main.js",

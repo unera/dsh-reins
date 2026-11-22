@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4] - 2026-11-22
+### Fixed
+- **The installers carried a second Electron.** With Electron in `optionalDependencies` the
+  packager saw a dependency and bundled `node_modules/electron` inside the app: the Windows setup
+  went from 91 to 191 MB, the macOS dmg from 104 to 220. The packaged app gets its runtime from
+  electron-builder, so that directory is excluded from the app files; the `bin` shim, which only
+  matters to an npm install, stays.
+
 ## [0.1.3] - 2026-11-22
 ### Added
 - **`npm i -g github:unera/dsh-reins` gives a working `reins` command.** The package now carries

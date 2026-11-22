@@ -11,7 +11,10 @@ export default {
   productName: 'Reins',
   copyright: 'Copyright © 2026 UNera',
   directories: { output: 'dist', buildResources: 'build' },
-  files: ['src/**/*', 'package.json'],
+  // `node_modules/electron` is a second copy of the runtime the packager already brings: with
+  // Electron listed as an optional dependency it would be bundled too, and the installer grew
+  // from 91 to 191 MB. The shim in `bin` only matters to an npm install, not to a packaged app.
+  files: ['src/**/*', 'bin/**/*', 'package.json', '!node_modules/electron/**'],
   linux: {
     target: ['AppImage'],
     publish: ['github'],

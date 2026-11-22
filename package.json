@@ -1,7 +1,7 @@
 {
   "name": "dsh-reins",
   "productName": "Reins",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A window to any DeepSeek Harness: local or remote, with tabs, theme and a proxy",
   "type": "module",
   "main": "src/main/main.js",
@@ -13,9 +13,9 @@
   },
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder",
-    "dist:linux": "electron-builder --linux",
-    "dist:win": "electron-builder --win",
+    "dist": "electron-builder --config electron-builder.config.mjs",
+    "dist:linux": "electron-builder --config electron-builder.config.mjs --linux",
+    "dist:win": "electron-builder --config electron-builder.config.mjs --win",
     "dist:mac": "electron-builder --mac"
   },
   "devDependencies": {

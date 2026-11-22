@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-11-22
+### Fixed
+- **The build configuration was never read.** `electron-builder.config.mjs` is not one of the
+  file names electron-builder picks up by itself, so every platform built its defaults — the
+  Linux job even tried to produce a snap and failed on the missing snapcraft. The scripts now pass
+  `--config` explicitly, and the release is published rather than left as a draft.
+
 ## [0.1.1] - 2026-11-22
 ### Fixed
 - **CI could not publish.** The release job answered `403 Resource not accessible by

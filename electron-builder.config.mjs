@@ -30,5 +30,6 @@ export default {
     artifactName: 'reins-${version}-${arch}.${ext}'
   },
   nsis: { oneClick: false, allowToChangeInstallationDirectory: true },
-  publish: [{ provider: 'github', owner: 'unera', repo: 'dsh-reins' }]
+  // a finished release, not a draft: the artifacts are what a person downloads
+  publish: [{ provider: 'github', owner: 'unera', repo: 'dsh-reins', releaseType: 'release' }]
 }

@@ -1,18 +1,40 @@
 {
-  "name": "dsh-reins",
+  "name": "@dr-co/dsh-reins",
   "productName": "Reins",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "A window to any DeepSeek Harness: local or remote, with tabs, theme and a proxy",
   "type": "module",
   "main": "src/main/main.js",
   "license": "MIT",
   "author": "UNera",
+  "homepage": "https://github.com/unera/dsh-reins#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unera/dsh-reins.git"
   },
+  "bugs": {
+    "url": "https://github.com/unera/dsh-reins/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "electron",
+    "desktop",
+    "tabs"
+  ],
   "bin": {
     "reins": "bin/reins.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "start": "electron .",

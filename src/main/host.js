@@ -37,7 +37,7 @@ export function startHarness ({ profile, port = 0, home = '', binary = '', onLin
     try {
       child = spawn(command, args, { env, stdio: ['ignore', 'pipe', 'pipe'] })
     } catch (error) {
-      reject(new Error(`не удалось запустить ${command}: ${error.message}`))
+      reject(new Error(`cannot start ${command}: ${error.message}`))
       return
     }
     const tail = []
@@ -46,7 +46,7 @@ export function startHarness ({ profile, port = 0, home = '', binary = '', onLin
       if (settled) return
       settled = true
       stopHarness(child)
-      reject(new Error(`харнесс не сказал «готов» за ${READY_TIMEOUT_MS / 1000} с. ${reason || tail.slice(-5).join(' | ') || '—'}`))
+      reject(new Error(`the Harness did not report ready in ${READY_TIMEOUT_MS / 1000} s. ${reason || tail.slice(-5).join(' | ') || '—'}`))
     }, READY_TIMEOUT_MS)
 
     // The reason a Harness refused to start is one line near the top of its stack trace, and
@@ -81,7 +81,7 @@ export function startHarness ({ profile, port = 0, home = '', binary = '', onLin
       if (settled) return
       settled = true
       clearTimeout(timer)
-      reject(new Error(`харнесс завершился до готовности (${code ?? signal}). ${reason || tail.slice(-5).join(' | ') || '—'}`))
+      reject(new Error(`the Harness exited before it was ready (${code ?? signal}). ${reason || tail.slice(-5).join(' | ') || '—'}`))
     })
   })
 }

@@ -6,7 +6,7 @@
  * Harness is started as a child and stopped on exit (or left running, if the person asked for
  * "detach"); a remote one is only joined. Whichever it is, the browser session carries the
  * credential, and an ordinary `/api` request tells us whether it is still good — that is the
- * check behind "записан ли урл и авторизован ли он".
+ * check behind "is the address recorded and is it authorized".
  */
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, session, shell, WebContentsView } from 'electron'
 import { join } from 'node:path'
@@ -49,7 +49,7 @@ function reinsSession () {
 
 /** A line for the window's own log: what the child says and what we did. */
 function note (line) {
-  state.lines.push(`${new Date().toLocaleTimeString('ru-RU')} ${line}`)
+  state.lines.push(`${new Date().toLocaleTimeString()} ${line}`)
   if (state.lines.length > 200) state.lines.shift()
 }
 
@@ -73,7 +73,7 @@ async function applyProxy (config = load()) {
   } else {
     await ses.setProxy({ mode: 'system' })
   }
-  note(`прокси: ${proxy.mode === 'manual' ? proxy.rules : proxy.mode}`)
+  note(`proxy: ${proxy.mode === 'manual' ? proxy.rules : proxy.mode}`)
 }
 
 /** The theme of our own windows; the Harness page has its own switch. */
@@ -94,9 +94,9 @@ async function openConnection () {
   if (connection.mode === 'local') {
     if (isRunning(state.child)) {
       state.base = state.base || ''
-      return { ok: Boolean(state.base), url: state.base, error: state.base ? null : 'локальный харнесс уже запускается' }
+      return { ok: Boolean(state.base), url: state.base, error: state.base ? null : 'the local Harness is already starting' }
     }
-    note(`запускаю локальный харнесс: профиль ${connection.profile}, порт ${connection.port || 'свободный'}`)
+    note(`starting the local Harness: profile ${connection.profile}, port ${connection.port || 'any free one'}`)
     try {
       const started = await startHarness({
         profile: connection.profile,
@@ -110,18 +110,18 @@ async function openConnection () {
       const ready = new URL(started.url)
       state.base = ready.origin
       state.start = started.url
-      note(`харнесс готов: ${state.base}`)
+      note(`the Harness is ready: ${state.base}`)
       return { ok: true, url: state.start, error: null }
     } catch (error) {
-      note(`локальный харнесс не поднялся: ${error.message}`)
+      note(`the local Harness did not come up: ${error.message}`)
       return { ok: false, url: '', error: explainLocalFailure(error.message, connection.profile) }
     }
   }
-  if (!connection.url) return { ok: false, url: '', error: 'адрес сервера не задан' }
+  if (!connection.url) return { ok: false, url: '', error: 'no server address given' }
   try {
     state.base = new URL(connection.url).origin
   } catch {
-    return { ok: false, url: '', error: `адрес «${connection.url}» не разбирается как URL` }
+    return { ok: false, url: '', error: `the address "${connection.url}" is not a URL` }
   }
   const token = state.token
   // the token is spent by this one opening: keeping it would send a dead credential again
@@ -143,14 +143,14 @@ async function openConnection () {
  */
 async function authStatus () {
   const base = state.base
-  if (!base) return { authorized: false, reason: 'нет подключения' }
+  if (!base) return { authorized: false, reason: 'not connected' }
   try {
     const answer = await reinsSession().fetch(`${base}/`)
-    if (answer.status === 401 || answer.status === 403) return { authorized: false, reason: 'нужна ссылка с токеном' }
-    if (!answer.ok) return { authorized: false, reason: `сервер ответил ${answer.status}` }
+    if (answer.status === 401 || answer.status === 403) return { authorized: false, reason: 'a launch link with a token is needed' }
+    if (!answer.ok) return { authorized: false, reason: `the server answered ${answer.status}` }
     return { authorized: true, reason: '' }
   } catch (error) {
-    return { authorized: false, reason: `сервер не отвечает: ${error.message}` }
+    return { authorized: false, reason: `the server does not answer: ${error.message}` }
   }
 }
 
@@ -164,7 +164,7 @@ async function authStatus () {
  */
 async function waitAuthorized (timeoutMs = 15_000) {
   const started = Date.now()
-  let last = { authorized: false, reason: 'нет подключения' }
+  let last = { authorized: false, reason: 'not connected' }
   for (;;) {
     last = await authStatus()
     if (last.authorized) return last
@@ -184,11 +184,11 @@ function explainLocalFailure (message, profile) {
   const missing = /profile "([^"]+)" does not exist/.exec(message ?? '')
   if (missing) {
     const name = missing[1]
-    return `Профиль «${name}» ещё не создан в этом DSH. Либо укажите в настройках существующий профиль ` +
-      `(например web), либо создайте этот командой: dsh plugin --profile ${name} add @deepseek-ai/dsh-base @deepseek-ai/dsh-web-app. ` +
-      'Если харнесс на другом сервере — переключите «Где живёт» на «На сервере» и вставьте ссылку с токеном.'
+    return `The profile "${name}" does not exist in this DSH yet. Either name an existing profile ` +
+      `in the settings (web, for example), or create this one with: dsh plugin --profile ${name} add @deepseek-ai/dsh-base @deepseek-ai/dsh-web-app. ` +
+      'If the Harness is on another server, switch "Where it lives" to "On a server" and paste the launch link with the token.'
   }
-  return message ?? 'локальный харнесс не поднялся'
+  return message ?? 'the local Harness did not come up'
 }
 
 /** A small frameless page around our own markup. */
@@ -367,7 +367,7 @@ function bindKeys (contents) {
 function wireIpc () {
   ipcMain.handle('reins:state', async () => {
     const config = load()
-    const auth = state.base ? await authStatus() : { authorized: false, reason: 'нет подключения' }
+    const auth = state.base ? await authStatus() : { authorized: false, reason: 'not connected' }
     return {
       config,
       base: state.base,
@@ -397,7 +397,7 @@ function wireIpc () {
     await applyProxy(config)
     const opened = await openConnection()
     if (!opened.ok) {
-      showSettings(opened.error ?? 'не удалось подключиться')
+      showSettings(opened.error ?? 'could not connect')
       return { ok: false, error: opened.error, url: '' }
     }
     showShell(opened.url)
@@ -448,12 +448,12 @@ function wireIpc () {
 async function detach () {
   const config = load()
   if (config.connection.onExit !== 'stop') {
-    note('отсоединяюсь, процесс оставляю')
+    note('detaching, leaving the process running')
     state.child = null
     return
   }
   if (isRunning(state.child)) {
-    note('останавливаю локальный харнесс')
+    note('stopping the local Harness')
     await stopHarness(state.child)
   }
   state.child = null
@@ -482,12 +482,12 @@ app.whenReady().then(async () => {
   wireIpc()
 
   if (!hasConnection(config)) {
-    showSettings('укажите харнесс: локальный профиль или адрес сервера')
+    showSettings('name a Harness: a local profile or a server address')
     return
   }
   const opened = await openConnection()
   if (!opened.ok) {
-    showSettings(opened.error ?? 'не удалось подключиться')
+    showSettings(opened.error ?? 'could not connect')
     return
   }
   showShell(opened.url)

@@ -122,22 +122,22 @@ async function saveOnly () {
   await window.reins.token(tokenOf(token))
   const saved = await save(config)
   current = saved
-  status('сохранено', 'good')
+  status('saved', 'good')
 }
 
 async function connect () {
   const { config, token } = collect()
   $('connect').disabled = true
-  status('подключаюсь…')
+  status('connecting…')
   try {
     await window.reins.token(tokenOf(token))
     const result = await window.reins.connect(config)
     $('token').value = ''
     if (!result.ok) {
-      status(result.error ?? 'не удалось подключиться', 'bad')
+      status(result.error ?? 'could not connect', 'bad')
       return
     }
-    status(result.authorized ? 'подключено' : `нужна ссылка с токеном: ${result.reason ?? ''}`, result.authorized ? 'good' : 'bad')
+    status(result.authorized ? 'connected' : `a launch link with a token is needed: ${result.reason ?? ''}`, result.authorized ? 'good' : 'bad')
   } finally {
     $('connect').disabled = false
     const fresh = await window.reins.state()
@@ -164,8 +164,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   current = state.config
   fill(state.config)
   logLines(state.log)
-  if (state.authorized) status(`уже авторизован: ${state.base}`, 'good')
-  else status(state.reason ?? 'не подключён', state.base ? 'bad' : '')
+  if (state.authorized) status(`already authorized: ${state.base}`, 'good')
+  else status(state.reason ?? 'not connected', state.base ? 'bad' : '')
 })
 
 window.reins.onMessage((text) => {

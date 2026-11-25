@@ -20,12 +20,12 @@ let electron
 try {
   electron = require('electron')
 } catch (error) {
-  console.error('reins: не нашёлся Electron рядом с пакетом — переустановите: npm i -g github:unera/dsh-reins')
+  console.error('reins: no Electron next to the package — reinstall it: npm i -g @dr-co/dsh-reins')
   console.error(String(error?.message ?? error))
   process.exit(1)
 }
 if (typeof electron !== 'string') {
-  console.error('reins: Electron установлен без бинарника (сборка пропущена) — переустановите без --ignore-scripts')
+  console.error('reins: Electron is installed without its binary (the build was skipped) — reinstall without --ignore-scripts')
   process.exit(1)
 }
 

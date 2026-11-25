@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0] - 2026-11-25
+### Changed
+- **Published to npm as `@dr-co/dsh-reins`.** The bare name `dsh-reins` on the registry belongs to
+  an unrelated package, so this one installs as `npm i -g @dr-co/dsh-reins`. The command it puts on
+  the PATH is still `reins`, and the GitHub repository keeps its name.
+- **The interface is English.** Settings, status messages, log lines and the error the CLI gives
+  when Electron is missing are English now, as the package description and the README already were.
+### Added
+- **A `LICENSE` file and an explicit `files` list.** The published tarball carries the application,
+  the CLI shim, the README and this changelog, and nothing else.
 ## [0.1.6] - 2026-11-22
 ### Changed
 - **Tabs off means no strip at all.** The band stayed reserved with the tab strip hidden inside it:
@@ -15,13 +25,13 @@
 - **A pasted launch link now fills the whole form.** `https://host/?token=…` is one string on the
   clipboard and two fields on the page, and Reins used to ask for the server separately: the link
   filled nothing but the token, so a person who pasted it had to type the address again. The link
-  now sets the address, switches «Где живёт» to «На сервере», and overrides a stale address —
+  now sets the address, switches "Where it lives" to "On a server", and overrides a stale address —
   which used to send a fresh token to the wrong host, quietly.
 - **A missing local profile is explained in words that lead somewhere.** The CLI's own answer
   (`profile "reins" does not exist; create it with 'dsh plugin …'`) is true and useless: the
   message now names both ways out — an existing profile such as `web`, or the command that creates
-  this one — and points at «На сервере» for anyone who meant a remote Harness all along.
-- The mode follows the fields: typing an address, like pasting a link, switches to «На сервере».
+  this one — and points at "On a server" for anyone who meant a remote Harness all along.
+- The mode follows the fields: typing an address, like pasting a link, switches to "On a server".
 
 ## [0.1.4] - 2026-11-22
 ### Fixed

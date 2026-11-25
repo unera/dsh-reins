@@ -10,11 +10,22 @@ A window to a DeepSeek Harness — local or remote — with tabs, its own theme 
   `dsh --profile <profile> --port 0 --no-open`, and the ready line it prints — `dsh web: <url>` —
   is both "it is up" and "here is this process's credential".
 - **Owns what it started.** On exit Reins stops the Harness it launched, or leaves it running
-  (`отсоединиться`), depending on the setting. A remote Harness is never touched.
+  (`detach`), depending on the setting. A remote Harness is never touched.
 - **Tabs hold different sessions.** Each tab is its own page in one shared browser session: one
   credential, separate sessions and drafts. Links that leave the Harness go to the system browser.
 - **Its own theme and proxy.** Light/dark/system for the app's windows; proxy either from the
   system, direct, or by rules.
+
+## Install
+
+```sh
+npm i -g @dr-co/dsh-reins
+reins
+```
+
+The package brings Electron itself, so this is a way to get the application, not a library. The
+GitHub releases carry the AppImage, the Windows installer and the macOS dmg/zip for anyone who
+prefers a file.
 
 ## Settings
 
